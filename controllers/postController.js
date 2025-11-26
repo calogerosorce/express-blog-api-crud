@@ -1,12 +1,13 @@
 const posts = require('../posts/posts')
+const { tag } = require('../helper/help')
 
 const index = (req, res) => {
     let postFilter = posts
-    const tag = req.query.tag.charAt(0).toUpperCase() + req.query.tag.slice(1);
-    console.log(tag);
+    /*  const tag = req.query.tag.charAt(0).toUpperCase() + req.query.tag.slice(1); */
+    const currentTag = tag(req, res);
 
-    if (tag) {
-        postFilter = posts.filter(item => item.tags.includes(tag))
+    if (currentTag) {
+        postFilter = posts.filter(item => item.tags.includes(currentTag))
     }
     res.json(postFilter)
 }
