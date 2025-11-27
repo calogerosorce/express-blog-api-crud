@@ -1,10 +1,9 @@
 const posts = require('../posts/posts')
-const { tag } = require('../helper/help')
+const { tag, posFil } = require('../helper/help')
 
 const index = (req, res) => {
     let postFilter = posts
-    /*  const tag = req.query.tag.charAt(0).toUpperCase() + req.query.tag.slice(1); */
-    const currentTag = tag(req, res);
+    const currentTag = tag(req?.query?.tag);
 
     if (currentTag) {
         postFilter = posts.filter(item => item.tags.includes(currentTag))
@@ -13,22 +12,31 @@ const index = (req, res) => {
 }
 
 const show = (req, res) => {
-    const postFilter = posts.find(item => item.id === Number(req.params.id))
-    if (!postFilter) {
-        return res.status(404).json({
-            error: true,
-            message: "Not found!"
-        })
-    }
+    const postFilter = posFil(posts, res, req.params.id);
+
     res.json(postFilter)
 }
 
 const store = (req, res) => {
-    res.send('Store a new post here')
+    const newPost = {
+        id: Date.now(),
+        ...req.body
+    }
+
+    posts.push(newPost)
+    res.status(201).json(newPost)
 }
 
 const update = (req, res) => {
-    res.send(`Update post whith ${req.params.id}`)
+    const postData = req.body
+    const postFilter = posFil(posts, res, req.params.id);
+
+    postFilter.title = postData.title
+    postFilter.content = postData.content
+    postFilter.image = postData.image
+    postFilter.tags = postData.tags
+
+    res.json(postFilter)
 }
 
 const modify = (req, res) => {
@@ -36,13 +44,7 @@ const modify = (req, res) => {
 }
 
 const destroy = (req, res) => {
-    const postFilter = posts.find(item => item.id === Number(req.params.id))
-    if (!postFilter) {
-        return res.status(404).json({
-            error: true,
-            message: "Not found!"
-        })
-    }
+    const postFilter = posFil(posts, res, req.params.id);
 
     posts.splice(posts.indexOf(postFilter), 1)
 

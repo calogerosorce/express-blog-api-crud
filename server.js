@@ -3,7 +3,11 @@ const app = express()
 const PORT = 3000
 const postsRouter = require('./routers/posts_rout')
 
+
 app.use(express.static('public'))
+
+app.use(express.json())
+
 
 app.listen(PORT, () => {
     console.log(`Example app listening on PORT http://localhost:${PORT}`);
